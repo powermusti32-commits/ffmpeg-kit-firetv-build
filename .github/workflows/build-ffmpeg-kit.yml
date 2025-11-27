@@ -1,4 +1,4 @@
-name: Build FFmpeg-Kit FireTV (arm64)
+name: Build FFmpeg-Kit for FireTV
 
 on:
   workflow_dispatch:
@@ -8,40 +8,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install required packages
-        run: |
-          sudo apt update
-          sudo apt install -y git build-essential autoconf automake libtool pkg-config yasm nasm unzip wget
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y yasm pkg-config autoconf automake libtool
 
-      - name: Clone ffmpeg-kit
+      - name: Clone FFmpeg-Kit
         run: |
           git clone https://github.com/arthenica/ffmpeg-kit.git
           cd ffmpeg-kit
-          git checkout main
+          git checkout mobile-5.1.0
 
-      - name: Download Android NDK r26d
-        run: |
-          wget https://dl.google.com/android/repository/android-ndk-r26d-linux.zip
-          unzip android-ndk-r26d-linux.zip -d $GITHUB_WORKSPACE
-          mv $GITHUB_WORKSPACE/android-ndk-r26d $GITHUB_WORKSPACE/ndk
-
-      - name: Export Android paths
-        run: |
-          echo "ANDROID_NDK_ROOT=$GITHUB_WORKSPACE/ndk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$GITHUB_WORKSPACE/android-sdk" >> $GITHUB_ENV
-          mkdir -p $GITHUB_WORKSPACE/android-sdk
-
-      - name: Build FFmpeg-Kit for arm64 (Fire TV Stick)
+      - name: Build FFmpeg-Kit (FireTV / armeabi-v7a)
         run: |
           cd ffmpeg-kit
-          chmod +x android.sh
-          ./android.sh --api-level=21 --disable-armv7 --disable-armv7neon --disable-x86 --disable-x86_64
+          ./android.sh \
+            --lts \
+            --enable-gpl \
+            --enable-x264 \
+            --enable-x265 \
+            --enable-opus \
+            --enable-libvorbis \
+            --enable-speex \
+            --android-abi armeabi-v7a \
+            --android-api-level 21
 
-      - name: Upload AAR Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload AAR
+        uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-kit-firetv-aar
-          path: ffmpeg-kit/prebuilt/**/ffmpeg-kit/ffmpeg-kit.aar
+          name: ffmpeg-kit-firetv
+          path: ffmpeg-kit/prebuilt/*.aar
