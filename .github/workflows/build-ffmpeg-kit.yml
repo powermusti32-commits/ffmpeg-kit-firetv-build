@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install required packages
         run: |
@@ -41,7 +41,7 @@ jobs:
           ./android.sh --api-level=21 --disable-armv7 --disable-armv7neon --disable-x86 --disable-x86_64
 
       - name: Upload AAR Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-kit-firetv-aar
           path: ffmpeg-kit/prebuilt/**/ffmpeg-kit/ffmpeg-kit.aar
