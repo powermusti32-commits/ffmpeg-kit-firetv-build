@@ -18,7 +18,7 @@ jobs:
         run: |
           git clone https://github.com/arthenica/ffmpeg-kit.git
           cd ffmpeg-kit
-          git checkout mobile-5.1.0
+          git checkout v5.1.LTS
 
       - name: Build FFmpeg-Kit (FireTV / armeabi-v7a)
         run: |
